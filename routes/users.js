@@ -2,6 +2,7 @@ const router = require('koa-router')();
 const services = require('../query')
 const crypto = require('crypto')
 const verify = require('../config/crypto');
+const xss = require('xss');
 
 router.get('/user', async function (ctx, next) {
   // console.log('ctx:', ctx, 'END');
@@ -18,10 +19,10 @@ router.post('/user/login', async (ctx, next) => {
   const {
     username,
     password
-  } = ctx.request.body;
+  } = xss(ctx.request.body);
   let md5 = crypto.createHash('md5');
-  ;
-  let responeseData = {}
+  
+  let responeseData = {};
   if (!username && !password) {
     responeseData = {
       code: 2,
