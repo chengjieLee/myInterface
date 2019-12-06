@@ -78,14 +78,25 @@ router.get('/blog/list', async (ctx) => {
 })
 router.get('/blog/detail', async (ctx)=> {
   const { blogId }  = ctx.query;
-
   if(blogId !== undefined) {
-    let querySql = `select blogcontent from blogs where id='${blogId}';` ;
+    let querySql = `select blogcontent,blogtitle,blogauthor,createtime from blogs where id='${blogId}';` ;
     const queryRes = await services.query(querySql);
-    let responseData = {
-      code: 0,
-      data:{
-        blogContent: queryRes[0].blogcontent
+    let responseData = {};
+    if(queryRes.length){
+      responseData = {
+        code: 0,
+        data:{
+          blogContent: queryRes[0].blogcontent,
+          blogTitle: queryRes[0].blogtitle,
+          author: queryRes[0].blogauthor,
+          createTime: queryRes[0].createtime
+        }
+      }
+    }else {
+      responseData = {
+        code: 1,
+        data:{},
+        msg: '没找到相关文章'
       }
     }
     ctx.body = responseData;

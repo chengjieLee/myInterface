@@ -22,14 +22,15 @@ const port = process.env.PORT || config.port
 onerror(app)
 
 // middlewares
-app.use(bodyparser())
+app.use(bodyparser({
+  jsonLimit: '5mb',
+  formLimit: '4096kb'
+}))
   .use(json())
   .use(logger())
   .use(cors())
-  .use(static(
-    path.join(__dirname, './static')
-  ))
-  .use(require('koa-static')(__dirname + '/public'))
+  .use(static((__dirname+'/static/')))
+  // .use(require('koa-static')(__dirname + '/public'))
   .use(views(path.join(__dirname, '/views'), {
     options: {settings: {views: path.join(__dirname, 'views')}},
     map: {'ejs': 'ejs'},
