@@ -16,10 +16,9 @@ router.get('/user', async function (ctx, next) {
   ctx.body = Data;
 })
 router.post('/user/login', async (ctx, next) => {
-  const {
-    username,
-    password
-  } = xss(ctx.request.body);
+  const username = xss(ctx.request.body.username);
+  const password = xss(ctx.request.body.password);
+  
   let md5 = crypto.createHash('md5');
   
   let responeseData = {};
@@ -28,7 +27,7 @@ router.post('/user/login', async (ctx, next) => {
       code: 2,
       msg: '缺少账号或密码'
     }
-    ctx.body = data;
+    ctx.body = responeseData;
     return;
   }
   // let insertSql = `insert into users (name,password) VALUES ('${username}','${md5.update(password).digest(verify)}');`
@@ -69,10 +68,10 @@ router.get('/user/info', async (ctx, next) => {
   ctx.body = response;
 })
 router.post('/user/logout', async (ctx, next) => {
-  const data = {
+  const resData = {
     data: 'success',
     code: 0
   }
-  ctx.body = data;
+  ctx.body = resData;
 })
 module.exports = router;

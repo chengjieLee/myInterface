@@ -1,8 +1,8 @@
 const router = require('koa-router')();
 const services = require('../query')
-const crypto = require('crypto')
-const verify = require('../config/crypto');
-const xss = require('xss');
+// const crypto = require('crypto')
+// const verify = require('../config/crypto');
+// const xss = require('xss');
 
 router.post('/blog/add', async (ctx) => {
   const {user, blogContent, blogTitle, blogAuthor} = ctx.request.body;
@@ -32,10 +32,18 @@ router.post('/blog/add', async (ctx) => {
   ctx.body = resData
 })
 
-router.get('/blog', async (ctx) => {
+router.get('/blog/list', async (ctx) => {
   const queryObj = ctx.query;
-  if(queryObj) {
-    let querySql = `select * from blogs where user='${queryObj.user}';`
+  const isEmptyObject = (obj) => {
+    for (var i in obj) {
+      return true;
+    }
+    return false
+  }
+  let haveQueryObj = isEmptyObject(queryObj)
+
+  if(haveQueryObj) {
+    let querySql = `select blogtitle,blogauthor,createtime,id from blogs where user='${queryObj.user}';`
     const queryRes = await services.query(querySql);
     let responseData = {
       code: 0,
@@ -43,14 +51,53 @@ router.get('/blog', async (ctx) => {
     }
     responseData.data = queryRes.map(item => {
       return {
-        blogContent: item.blogcontent,
         blogTitle: item.blogtitle,
         author: item.blogauthor,
-        createTime: item.createtime
+        createTime: item.createtime,
+        blogId: item.id
+      }
+    })
+    ctx.body = responseData;
+  }else {
+    let querySql = `select blogtitle,blogauthor,createtime,id from blogs;` ;
+    const queryRes = await services.query(querySql);
+    let responseData = {
+      code: 0,
+      data: [] 
+    }
+    responseData.data = queryRes.map(item => {
+      return {
+        blogTitle: item.blogtitle,
+        author: item.blogauthor,
+        createTime: item.createtime,
+        blogId: item.id
       }
     })
     ctx.body = responseData;
   }
+})
+router.get('/blog/detail', async (ctx)=> {
+  const { blogId }  = ctx.query;
+
+  if(blogId !== undefined) {
+    let querySql = `select blogcontent from blogs where id='${blogId}';` ;
+    const queryRes = await services.query(querySql);
+    let responseData = {
+      code: 0,
+      data:{
+        blogContent: queryRes[0].blogcontent
+      }
+    }
+    ctx.body = responseData;
+  }else {
+    let responseData = {
+      code: 1,
+      data:{},
+      msg: '请传入blog ID!'
+    }
+    ctx.body = responseData
+  }
+
 })
 
 module.exports = router;
