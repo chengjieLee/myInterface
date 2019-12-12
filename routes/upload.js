@@ -3,11 +3,9 @@ const router = require('koa-router')();
 const fs = require('fs');
 const path = require('path')
 const formidable = require('koa-formidable');
-// const crypto = require('crypto')
-// const verify = require('../config/crypto');
-// const xss = require('xss');
 
-//新建文件？
+
+//新建文件
 const mkdirs = (dirname, callback) => {
   fs.exists(dirname,(exists) => {
     if(exists){

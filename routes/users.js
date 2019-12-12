@@ -4,23 +4,38 @@ const crypto = require('crypto')
 const verify = require('../config/crypto');
 const xss = require('xss');
 
-router.get('/user', async function (ctx, next) {
+router.get('/user/list', async function (ctx, next) {
   // console.log('ctx:', ctx, 'END');
-  let Data = {
-    code: 200,
-    data: {
-      nice: true,
-      msg: 'success request'
+  let responseJson = {};
+  if(ctx.cookies.get('vue_admin_token')!== 'chengjie') {
+    responseJson = {
+      code: 1,
+      data: [],
+      msg: '没有查询权限'
+    }
+  }else {
+    let UserSql = `select name from users`;
+    const sqlRes = await services.query(UserSql);
+    let userList = sqlRes.map(item => {
+      return {
+        user: item.name
+      }
+    })
+    responseJson = {
+      code: 0,
+      data:userList,
+      msg: 'success'
     }
   }
-  ctx.body = Data;
+ 
+  ctx.body = responseJson;
 })
 router.post('/user/login', async (ctx, next) => {
   const username = xss(ctx.request.body.username);
   const password = xss(ctx.request.body.password);
-  
+
   let md5 = crypto.createHash('md5');
-  
+
   let responeseData = {};
   if (!username && !password) {
     responeseData = {
@@ -30,23 +45,22 @@ router.post('/user/login', async (ctx, next) => {
     ctx.body = responeseData;
     return;
   }
-  // let insertSql = `insert into users (name,password) VALUES ('${username}','${md5.update(password).digest(verify)}');`
   let querySql = `select * from users where name='${username}';`
   const userVerify = await services.query(querySql);
   const verifyPass = md5.update(password).digest(verify);
 
-  if(userVerify.length===0) {
+  if (userVerify.length === 0) {
     responeseData = {
       code: 1,
       msg: '没有找到该账号，建议注册，亲！'
     }
-  }else {
-    if(userVerify[0].password == verifyPass) {
+  } else {
+    if (userVerify[0].password == verifyPass) {
       responeseData = {
         code: 0,
         token: username
       }
-    }else {
+    } else {
       responeseData = {
         code: 1,
         msg: '密码不正确'
@@ -57,13 +71,25 @@ router.post('/user/login', async (ctx, next) => {
 })
 router.get('/user/info', async (ctx, next) => {
   const params = ctx.query;
-  console.log(params);
-  const response = {
-    code: 0,
-    data: {
-      name: 'xukai',
-      avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif" 
-    } 
+  const name = params.token;
+  let response = {};
+  if (name == 'chengjie') {
+    response = {
+      code: 0,
+      data: {
+        name: name,
+        admin: true,
+        avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+      }
+    }
+  } else {
+    response = {
+      code: 0,
+      data: {
+        name: name,
+        avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+      }
+    }
   }
   ctx.body = response;
 })
@@ -73,5 +99,32 @@ router.post('/user/logout', async (ctx, next) => {
     code: 0
   }
   ctx.body = resData;
+})
+router.delete('/user/delete', async (ctx) => {
+  const { username } = ctx.query;
+  console.log(username);
+  if(username) {
+    let deleteSql = `DELETE FROM users where name='${username}';`
+    const deleteRes = await services.query(deleteSql);
+    let responseJson = {};
+    if(deleteRes.fieldCount==0&&deleteRes.warningCount==0) {
+      responseJson = {
+        code: 0,
+        msg: '移除成功'
+      }
+    }else {
+      responseJson = {
+        code: 1,
+        msg: '移除失败'
+      }
+    }
+    ctx.body = responseJson;
+  }else {
+    let responseJson = {
+      code: 1,
+      msg: '未传入用户名'
+    }
+    ctx.body = responseJson;
+  }
 })
 module.exports = router;

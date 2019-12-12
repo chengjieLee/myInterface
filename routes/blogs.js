@@ -5,25 +5,30 @@ const services = require('../query')
 // const xss = require('xss');
 
 router.post('/blog/add', async (ctx) => {
-  const {user, blogContent, blogTitle, blogAuthor} = ctx.request.body;
+  const {
+    user,
+    blogContent,
+    blogTitle,
+    blogAuthor
+  } = ctx.request.body;
   let createTime = new Date().toLocaleDateString();
   let resData = {}
-  if(!user||!blogContent||!blogTitle||!blogAuthor){
+  if (!user || !blogContent || !blogTitle || !blogAuthor) {
     resData = {
       code: 1,
-      data:null,
+      data: null,
       msg: 'blog参数不正确'
     }
-  }else {
-    let insertSql = `insert into blogs (user,blogcontent,blogtitle,blogauthor,createtime) VALUES ('${user}','${blogContent}','${blogTitle}','${blogAuthor}','${createTime}');`
+  } else {
+    let insertSql = `insert into blogs (user,blogcontent,blogtitle,blogauthor,createtime,isdelete) VALUES ('${user}','${blogContent}','${blogTitle}','${blogAuthor}','${createTime}',0);`
     const insertRes = await services.query(insertSql);
-    if(insertRes.fieldCount==0&&insertRes.warningCount==0){
-      resData={
+    if (insertRes.fieldCount == 0 && insertRes.warningCount == 0) {
+      resData = {
         code: 0,
         msg: 'success'
       }
-    }else {
-      resData={
+    } else {
+      resData = {
         code: 2,
         msg: insertRes.message
       }
@@ -42,73 +47,101 @@ router.get('/blog/list', async (ctx) => {
   }
   let haveQueryObj = isEmptyObject(queryObj)
 
-  if(haveQueryObj) {
-    let querySql = `select blogtitle,blogauthor,createtime,id from blogs where user='${queryObj.user}';`
+  if (haveQueryObj) {
+    let querySql = `select blogtitle,blogauthor,createtime,id,user from blogs where user='${queryObj.user}' and isdelete=0;`
     const queryRes = await services.query(querySql);
     let responseData = {
       code: 0,
-      data: [] 
+      data: []
     }
     responseData.data = queryRes.map(item => {
       return {
         blogTitle: item.blogtitle,
         author: item.blogauthor,
         createTime: item.createtime,
-        blogId: item.id
+        blogId: item.id,
+        user: item.user
       }
     })
     ctx.body = responseData;
-  }else {
-    let querySql = `select blogtitle,blogauthor,createtime,id from blogs;` ;
+  } else {
+    let querySql = `select blogtitle,blogauthor,createtime,id,user from blogs where isdelete=0;`;
     const queryRes = await services.query(querySql);
     let responseData = {
       code: 0,
-      data: [] 
+      data: []
     }
     responseData.data = queryRes.map(item => {
       return {
         blogTitle: item.blogtitle,
         author: item.blogauthor,
         createTime: item.createtime,
-        blogId: item.id
+        blogId: item.id,
+        user: item.user
       }
     })
     ctx.body = responseData;
   }
 })
-router.get('/blog/detail', async (ctx)=> {
-  const { blogId }  = ctx.query;
-  if(blogId !== undefined) {
-    let querySql = `select blogcontent,blogtitle,blogauthor,createtime from blogs where id='${blogId}';` ;
+router.get('/blog/detail', async (ctx) => {
+  const {
+    blogId
+  } = ctx.query;
+  if (blogId !== undefined) {
+    let querySql = `select blogcontent,blogtitle,blogauthor,createtime from blogs where id='${blogId}';`;
     const queryRes = await services.query(querySql);
     let responseData = {};
-    if(queryRes.length){
+    if (queryRes.length) {
       responseData = {
         code: 0,
-        data:{
+        data: {
           blogContent: queryRes[0].blogcontent,
           blogTitle: queryRes[0].blogtitle,
           author: queryRes[0].blogauthor,
           createTime: queryRes[0].createtime
         }
       }
-    }else {
+    } else {
       responseData = {
         code: 1,
-        data:{},
+        data: {},
         msg: '没找到相关文章'
       }
     }
     ctx.body = responseData;
-  }else {
+  } else {
     let responseData = {
       code: 1,
-      data:{},
+      data: {},
       msg: '请传入blog ID!'
     }
     ctx.body = responseData
   }
 
+})
+
+router.delete('/blog/delete', async (ctx) => {
+  const { blogId } = ctx.query;
+  if (blogId) {
+    let mildDeleteSql = `update blogs set isdelete=1 where id=${blogId}`;
+    const mildDeleteRes = await services.query(mildDeleteSql);
+    console.log(mildDeleteRes);
+    if(mildDeleteRes.fieldCount==0&&mildDeleteRes.warningCount==0){
+      let responseJson = {
+        code: 0,
+        data: {},
+        msg: '删除成功'
+      }
+      ctx.body = responseJson
+    }
+  } else {
+    let responseJson = {
+      code: 1,
+      data: {},
+      msg: '删除失败'
+    }
+    ctx.body = responseJson
+  }
 })
 
 module.exports = router;

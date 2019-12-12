@@ -6,6 +6,7 @@
     "start": "nodemon app.js"
   },
   "dependencies": {
+    "captchapng": "0.0.1",
     "crypto": "^1.0.1",
     "debug": "~2.6.8",
     "ejs": "~2.5.5",
