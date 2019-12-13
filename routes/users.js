@@ -102,7 +102,6 @@ router.post('/user/logout', async (ctx, next) => {
 })
 router.delete('/user/delete', async (ctx) => {
   const { username } = ctx.query;
-  console.log(username);
   if(username) {
     let deleteSql = `DELETE FROM users where name='${username}';`
     const deleteRes = await services.query(deleteSql);

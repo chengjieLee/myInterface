@@ -123,9 +123,8 @@ router.get('/blog/detail', async (ctx) => {
 router.delete('/blog/delete', async (ctx) => {
   const { blogId } = ctx.query;
   if (blogId) {
-    let mildDeleteSql = `update blogs set isdelete=1 where id=${blogId}`;
+    let mildDeleteSql = `update blogs set isdelete=1 where id=${blogId};`;
     const mildDeleteRes = await services.query(mildDeleteSql);
-    console.log(mildDeleteRes);
     if(mildDeleteRes.fieldCount==0&&mildDeleteRes.warningCount==0){
       let responseJson = {
         code: 0,
