@@ -1,3 +1,7 @@
+# 启动 / 关闭  /Centos
+1.启动：/etc/init.d/mysqld start
+2.停止：/etc/init.d/mysqld stop
+3.重启：/etc/init.d/mysqld restart
 # 建库 user
 CREATE DATABASE user
 
@@ -21,14 +25,14 @@ blogs 中包含 主键 id  user 用户名 blogcontent 博客内容 blogtitle 博
  CREATE TABLE resumes (
    resumeid int(10) primary key auto_increment, 
    user varchar(10),
-   avatar varchar(20),
+   avatar varchar(255),
    education varchar(10), 
    profession varchar(20),
    skills text, 
    workexperience text, 
-   project text
-   --- name varchar(10) --- //这条是后来插入的
-  );
+   project text,
+   name varchar(10) 
+  );--- //这条是后来插入的
  
 resumes 表用来存储个人信息简历 应包含 id 姓名 string  头像 url string 学历: string 职位string  技能[{skillname:, skillProgress} {}],  工作经历[{start: ,end: ,company:,job:, desc:} ,{}] , 项目经验 [{}, {}]
 
@@ -37,7 +41,7 @@ alter table resumes add name varchar(10);
 
 ### 更新表中某个字段属性
  alter table resumes change avatar avatar varchar(255);
-
+ >alter table 表名称 change 字段原名称 字段新名称 字段类型 [是否允许非空];
 ### 更新语句
 update tableName set 表字段名=(values) where 条件;
 

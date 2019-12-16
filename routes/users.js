@@ -3,6 +3,8 @@ const services = require('../query')
 const crypto = require('crypto')
 const verify = require('../config/crypto');
 const xss = require('xss');
+const ip = require('ip');
+const ipAddress = ip.address();
 
 const queryAvatar = async (user) => {
   let querySql = `select avatar from resumes where user='${user}';`;
@@ -83,7 +85,7 @@ router.get('/user/info', async (ctx, next) => {
   const params = ctx.query;
   const name = params.token;
   let response = {};
-  let avatarUrl = "http://localhost:7654/upload/Default.jpg";
+  let avatarUrl = `http://${ipAddress}:7654/upload/Default.jpg`;
   let avatarResult = await queryAvatar(name)
   if (avatarResult){
     avatarUrl = avatarResult;
