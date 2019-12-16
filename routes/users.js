@@ -4,6 +4,16 @@ const crypto = require('crypto')
 const verify = require('../config/crypto');
 const xss = require('xss');
 
+const queryAvatar = async (user) => {
+  let querySql = `select avatar from resumes where user='${user}';`;
+  let avatarResult = await services.query(querySql);
+  if(avatarResult.length > 0 && avatarResult[0].avatar){
+    return avatarResult[0].avatar;
+  }else {
+    return;
+  }
+}
+
 router.get('/user/list', async function (ctx, next) {
   // console.log('ctx:', ctx, 'END');
   let responseJson = {};
@@ -73,13 +83,19 @@ router.get('/user/info', async (ctx, next) => {
   const params = ctx.query;
   const name = params.token;
   let response = {};
+  let avatarUrl = "http://localhost:7654/upload/Default.jpg";
+  let avatarResult = await queryAvatar(name)
+  if (avatarResult){
+    avatarUrl = avatarResult;
+  }
+
   if (name == 'chengjie') {
     response = {
       code: 0,
       data: {
         name: name,
         admin: true,
-        avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+        avatar: avatarUrl
       }
     }
   } else {
@@ -87,7 +103,7 @@ router.get('/user/info', async (ctx, next) => {
       code: 0,
       data: {
         name: name,
-        avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+        avatar: avatarUrl
       }
     }
   }

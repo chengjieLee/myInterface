@@ -45,8 +45,7 @@ router.get('/blog/list', async (ctx) => {
     }
     return false
   }
-  let haveQueryObj = isEmptyObject(queryObj)
-
+  let haveQueryObj = isEmptyObject(queryObj);
   if (haveQueryObj) {
     let querySql = `select blogtitle,blogauthor,createtime,id,user from blogs where user='${queryObj.user}' and isdelete=0;`
     const queryRes = await services.query(querySql);

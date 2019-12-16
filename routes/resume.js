@@ -1,5 +1,6 @@
 const router = require('koa-router')();
 const services = require('../query')
+const xss = require('xss');
 
 const checkHasUser = async (user) => {
   let checkSql = `select resumeid from resumes where user='${user}';`;
@@ -13,19 +14,59 @@ const checkHasUser = async (user) => {
 
 router.post('/resume/edit', async (ctx, next) => {
   const user = ctx.header['x-token']
-  let hasUser = null;
-  const { resumeBase } = ctx.request.body
-
-  hasUser = await checkHasUser();
-  if (hasUser) {
-
+  const {
+    resumeBase
+  } = ctx.request.body
+  let {
+    name,
+    education,
+    profession,
+    skillList
+  } = resumeBase;
+  let responseData = {};
+  name = name ? xss(name) : '--';
+  education = education ? xss(education) : '--';
+  profession = profession ? xss(profession) : '--';
+  let stringifySkillList = JSON.stringify(skillList);
+  let hasUser = await checkHasUser(user);
+  // 表中有该用户字段则更新  没有该用户字段 插入新数据
+  if (hasUser) {  
+    let updateSql = `update resumes set name='${name}',education='${education}',
+    profession='${profession}',skills='${stringifySkillList}' where user='${user}';`;
+    let updateRes = await services.query(updateSql);
+    if (updateRes.fieldCount == 0 && updateRes.warningCount == 0) {
+      console.log('保存成功')
+      responseData = {
+        code: 0,
+        data: {},
+        msg: '保存成功'
+      }
+    } else {
+      responseData = {
+        code: 1,
+        msg: '保存失败'
+      }
+      console.log('updateRes', updateRes)
+    }
   } else {
-
-  }
-  let responseData = {
-    code: 0,
-    data: {},
-    msg: ''
+    // 插入语句
+    let insertSql = `insert into resumes (user, name, education, skills, profession)
+        values ('${user}','${name}','${eduction}','${stringifySkillList}','${profession}');`
+    const insertRes = await services.query(insertSql);
+    if (insertRes.fieldCount == 0 && insertRes.warningCount == 0) {
+      console.log('插入成功')
+      responseData = {
+        code: 0,
+        data: {},
+        msg: '保存成功'
+      }
+    } else {
+      responseData = {
+        code: 1,
+        msg: '保存失败'
+      }
+      console.log('insertRes', insertRes)
+    }
   }
   ctx.body = responseData;
 })
@@ -37,18 +78,16 @@ router.get('/resume', async (ctx) => {
   let responseJson = {};
   let hasUser = await checkHasUser(user);
 
-  if (hasUser) {
+  if (hasUser) { // 包含该user时， 触发搜索查询 不包含则返回默认
     let queryResumeSql = `select * from resumes where user='${user}';`;
-    let queryResume =await services.query(queryResumeSql);
-    console.log('queryResume', queryResume);
+    let queryResume = await services.query(queryResumeSql);
     let resumeRes = queryResume[0];
-    console.log('resumeRes', resumeRes);
     let resumeData = {
       avatar: resumeRes.avatar ? resumeRes.avatar : '',
       name: resumeRes.name ? resumeRes.name : '',
       education: resumeRes.education ? resumeRes.education : '',
       profession: resumeRes.profession ? resumeRes.profession : '',
-      skills: resumeRes.skills ? JSON.parse(resumeRes.skills) : [],
+      skillList: resumeRes.skills ? JSON.parse(resumeRes.skills) : [],
       workExperience: resumeRes.workexperience ? JSON.parse(resumeRes.workexperience) : [],
       project: resumeRes.project ? JSON.parse(resumeRes.project) : []
     }
