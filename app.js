@@ -16,8 +16,8 @@ const static = require('koa-static')
 const config = require('./config')
 const registerRouter = require('./routes')
 
-const port = process.env.PORT || config.port
-console.log('port', port)
+// const port = process.env.PORT || config.port
+// console.log('port', port)
 // error handler
 onerror(app)
 

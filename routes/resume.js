@@ -30,7 +30,7 @@ router.post('/resume/edit', async (ctx, next) => {
   let stringifySkillList = JSON.stringify(skillList);
   let hasUser = await checkHasUser(user);
   // 表中有该用户字段则更新  没有该用户字段 插入新数据
-  if (hasUser) {  
+  if (hasUser) {
     let updateSql = `update resumes set name='${name}',education='${education}',
     profession='${profession}',skills='${stringifySkillList}' where user='${user}';`;
     let updateRes = await services.query(updateSql);
@@ -105,6 +105,35 @@ router.get('/resume', async (ctx) => {
       skills: [],
       workExperience: [],
       project: []
+    }
+    responseJson = {
+      data: initResume,
+      msg: 'success',
+      code: 0
+    }
+  }
+  ctx.body = responseJson;
+})
+
+router.get('/resume/skill', async (ctx) => {
+  const user = ctx.header['x-token']
+  let responseJson = {};
+  let hasUser = await checkHasUser(user);
+  if (hasUser) { // 包含该user时， 触发搜索查询 不包含则返回默认
+    let queryResumeSql = `select skills from resumes where user='${user}';`;
+    let queryResume = await services.query(queryResumeSql);
+    let resumeRes = queryResume[0];
+    let resumeData = {
+      skillList: resumeRes.skills ? JSON.parse(resumeRes.skills) : [],
+    }
+    responseJson = {
+      code: 0,
+      msg: 'success',
+      data: resumeData
+    }
+  } else {
+    let initResume = {
+      skills: [],
     }
     responseJson = {
       data: initResume,

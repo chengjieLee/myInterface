@@ -28,13 +28,12 @@ const includeUser = async (username) => {
   } else {
     return true;
   }
-
 }
 router.get('/register/captcha', async (ctx, next) => {
   const cap = parseInt(Math.random() * 9000 + 1000); // *9000为了 使 个十百位皆有出现可能 +1000 补充千位
   const p = new captchapng(80, 30, cap);
-  p.color(0, 0, 0, 0);
-  p.color(80, 80, 80, 255);
+  p.color(255, 255, 0, 0);
+  p.color(255, 255, 255, 255);
   const base64 = p.getBase64();
 
   ctx.cookies.set('captcha', cap, {

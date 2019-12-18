@@ -2,15 +2,16 @@ const router = require('koa-router')();
 const services = require('../query')
 // const crypto = require('crypto')
 // const verify = require('../config/crypto');
-// const xss = require('xss');
+const xss = require('xss');
 
 router.post('/blog/add', async (ctx) => {
-  const {
+  let {
     user,
     blogContent,
     blogTitle,
     blogAuthor
   } = ctx.request.body;
+  blogTitle = xss(blogTitle);
   let createTime = new Date().toLocaleDateString();
   let resData = {}
   if (!user || !blogContent || !blogTitle || !blogAuthor) {
@@ -36,7 +37,30 @@ router.post('/blog/add', async (ctx) => {
   }
   ctx.body = resData
 })
-
+router.post('/blog/modify', async (ctx) => {
+  const {
+    user,
+    blogContent,
+    blogAuthor,
+    blogId
+  } = ctx.request.body;
+  let blogTitle = xss(ctx.request.body.blogTitle);
+  let updateSql = `update blogs set blogcontent='${blogContent}',blogtitle='${blogTitle}',
+  blogauthor='${blogAuthor}' where user='${user}' and id=${blogId} ;`;
+  const updateRes = await services.query(updateSql);
+  if(updateRes.fieldCount == 0 && updateRes.warningCount == 0) {
+    let responseJson = {
+      code: 0,
+      msg: 'success'
+    }
+    ctx.body = responseJson
+  }else {
+    ctx.body = {
+      code: 1,
+      msg: 'error'
+    }
+  }
+})
 router.get('/blog/list', async (ctx) => {
   const queryObj = ctx.query;
   const isEmptyObject = (obj) => {
@@ -47,7 +71,7 @@ router.get('/blog/list', async (ctx) => {
   }
   let haveQueryObj = isEmptyObject(queryObj);
   if (haveQueryObj) {
-    let querySql = `select blogtitle,blogauthor,createtime,id,user from blogs where user='${queryObj.user}' and isdelete=0;`
+    let querySql = `select blogtitle,blogauthor,createtime,id,user from blogs where user='${queryObj.user}' and isdelete=0 Order by id desc;`
     const queryRes = await services.query(querySql);
     let responseData = {
       code: 0,
@@ -64,7 +88,7 @@ router.get('/blog/list', async (ctx) => {
     })
     ctx.body = responseData;
   } else {
-    let querySql = `select blogtitle,blogauthor,createtime,id,user from blogs where isdelete=0;`;
+    let querySql = `select blogtitle,blogauthor,createtime,id,user from blogs where isdelete=0 Order by id DESC;`;
     const queryRes = await services.query(querySql);
     let responseData = {
       code: 0,
