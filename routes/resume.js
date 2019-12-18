@@ -51,7 +51,7 @@ router.post('/resume/edit', async (ctx, next) => {
   } else {
     // 插入语句
     let insertSql = `insert into resumes (user, name, education, skills, profession)
-        values ('${user}','${name}','${eduction}','${stringifySkillList}','${profession}');`
+        values ('${user}','${name}','${education}','${stringifySkillList}','${profession}');`
     const insertRes = await services.query(insertSql);
     if (insertRes.fieldCount == 0 && insertRes.warningCount == 0) {
       console.log('插入成功')
