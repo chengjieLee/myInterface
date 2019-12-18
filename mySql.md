@@ -47,3 +47,7 @@ update tableName set 表字段名=(values) where 条件;
 
 ### 插入语句
 insert into 表名 (字段1,字段2) VALUES (字段1 value, 字段2 value);
+
+# 设置默认字符集
+
+ALTER TABLE logtest CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
