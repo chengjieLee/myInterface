@@ -25,7 +25,10 @@ app.use(bodyparser({
 }))
   .use(json())
   .use(logger())
-  .use(cors())
+  .use(cors({
+    origin: 'http://47.103.116.19',
+    credentials: true
+  }))
   .use(static((__dirname+'/static/')))
   // .use(require('koa-static')(__dirname + '/public'))
   .use(views(path.join(__dirname, '/views'), {
