@@ -38,9 +38,9 @@ router.get('/register/captcha', async (ctx, next) => {
 
   ctx.cookies.set('captcha', cap, {
     maxAge: 360000,
-    httpOnly: true
+    // httpOnly: true
+    overwrite: false
   });
-  console.log(ctx.cookies);
   ctx.status = 200;
   let responseData = {
     code: 0,
