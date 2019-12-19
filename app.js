@@ -16,9 +16,6 @@ const static = require('koa-static')
 const config = require('./config')
 const registerRouter = require('./routes')
 
-// const port = process.env.PORT || config.port
-// console.log('port', port)
-// error handler
 onerror(app)
 
 // middlewares
@@ -62,5 +59,5 @@ app.on('error', function(err, ctx) {
 })
 
 module.exports = app.listen(config.port, () => {
-  console.log(`Listening on http://localhost:${config.port}`)
+  console.log(`Listening on http://47.103.116.19:${config.port}`)
 })

@@ -40,6 +40,7 @@ router.get('/register/captcha', async (ctx, next) => {
     maxAge: 360000,
     httpOnly: true
   });
+  console.log(ctx.cookies);
   ctx.status = 200;
   let responseData = {
     code: 0,
@@ -58,6 +59,7 @@ router.post('/register', async (ctx) => {
   const password = xss(registerFormData.password);
   const captcha = xss(registerFormData.captcha);
   const captchaStr = ctx.cookies.get('captcha');
+  console.log(captchaStr)
   let md5 = crypto.createHash('md5');
 
   let responseData = {};
