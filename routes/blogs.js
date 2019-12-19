@@ -13,6 +13,7 @@ router.post('/blog/add', async (ctx) => {
   } = ctx.request.body;
   blogTitle = xss(blogTitle);
   let createTime = new Date().toLocaleDateString();
+  console.log(createTime);
   let resData = {}
   if (!user || !blogContent || !blogTitle || !blogAuthor) {
     resData = {
@@ -78,6 +79,7 @@ router.get('/blog/list', async (ctx) => {
       data: []
     }
     responseData.data = queryRes.map(item => {
+      console.log(item.createtime);
       return {
         blogTitle: item.blogtitle,
         author: item.blogauthor,
