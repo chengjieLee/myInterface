@@ -3,9 +3,7 @@ const services = require('../query')
 const fs = require('fs');
 const path = require('path')
 const formidable = require('koa-formidable');
-const ip = require('ip')
-const ipAddress = ip.address();
-console.log(ipAddress)
+
 //检测是否包含该用户
 const checkHasUser = async (user) => {
   let checkSql = `select resumeid from resumes where user='${user}';`;
@@ -48,7 +46,7 @@ router.post('/upload/image', async (ctx, next) => {
         let avatarName = uid + '_' + user + '_' + filename;
         mkdirs('static/upload', () => {
           fs.renameSync(files.file.path, uploadDir + avatarName); // 重命名
-          resolve(`http://${ipAddress}:7654/upload/${avatarName}`)
+          resolve(`http://47.103.116.19:7654/upload/${avatarName}`)
           //+ uploadDir
         })
       })
@@ -57,7 +55,6 @@ router.post('/upload/image', async (ctx, next) => {
   let url = await formImage();
   if (resumeUser) {
     const hasUser = await checkHasUser(resumeUser);
-    console.log(hasUser);
     if (hasUser) {
       let updateSql = `update resumes set avatar='${url}' where user='${resumeUser}'; `
       let updateAvatar = await services.query(updateSql);
