@@ -83,7 +83,7 @@ router.get('/blog/list', async (ctx) => {
       return {
         blogTitle: item.blogtitle,
         author: item.blogauthor,
-        createTime: item.createtime,
+        createTime: new Date(item.createtime).toLocaleDateString(),
         blogId: item.id,
         user: item.user
       }
