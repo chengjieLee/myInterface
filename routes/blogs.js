@@ -12,9 +12,9 @@ router.post('/blog/add', async (ctx) => {
     blogAuthor
   } = ctx.request.body;
   blogTitle = xss(blogTitle);
-  console.log(1,blogContent.includes("\""));
+
   blogContent = blogContent.replace(/"/g,'\\\"');
-  console.log(2,blogContent.includes("\\\""));
+
   let createTime = new Date().toLocaleDateString();
   console.log(createTime);
   let resData = {}
@@ -49,9 +49,7 @@ router.post('/blog/modify', async (ctx) => {
   } = ctx.request.body;
   let blogTitle = xss(ctx.request.body.blogTitle);
   let blogContent = ctx.request.body.blogContent;
-  // console.log(1,blogContent.includes("'"));
-  // blogContent = blogContent.replace(/'/g,"''");
-  // console.log(2,blogContent.includes("''"));
+  blogContent = blogContent.replace(/"/g,'\\\"');
   let updateSql = `update blogs set blogcontent="${blogContent}",blogtitle="${blogTitle}",
   blogauthor="${blogAuthor}" where user="${user}" and id=${blogId};`;
   const updateRes = await services.query(updateSql);
