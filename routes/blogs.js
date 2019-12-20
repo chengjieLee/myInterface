@@ -171,7 +171,7 @@ router.delete('/blog/delete', async (ctx) => {
   }
 })
 
-router.get('blog/permission', async(ctx) => {
+router.get('/blog/permission', async(ctx) => {
   const user = ctx.header['x-token'];
   const id = ctx.request.query.id;
   let safeId = xss(id);
