@@ -171,4 +171,23 @@ router.delete('/blog/delete', async (ctx) => {
   }
 })
 
+router.get('blog/permission', async(ctx) => {
+  const user = ctx.header['x-token'];
+  const id = ctx.request.query.id;
+  let safeId = xss(id);
+  let querySql = `select '${user}' from blogs where id=${safeId};`;
+  const result = await services.query(querySql);
+  if(result.length > 0) {
+    ctx.body = {
+      code: 0,
+      msg: 'success'
+    }
+  }else {
+    ctx.body = {
+      code: 1,
+      msg: 'error'
+    }
+  }
+})
+
 module.exports = router;
