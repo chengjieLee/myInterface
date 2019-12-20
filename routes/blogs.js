@@ -41,13 +41,16 @@ router.post('/blog/add', async (ctx) => {
 router.post('/blog/modify', async (ctx) => {
   const {
     user,
-    blogContent,
     blogAuthor,
     blogId
   } = ctx.request.body;
   let blogTitle = xss(ctx.request.body.blogTitle);
-  let updateSql = `update blogs set blogcontent='${blogContent}',blogtitle='${blogTitle}',
-  blogauthor='${blogAuthor}' where user='${user}' and id=${blogId} ;`;
+  let blogContent = ctx.request.body.blogContent;
+  console.log(blogContent.includes("'"));
+  blogContent = blogContent.replace(/'/g," '' ");
+  console.log(blogContent.includes("'"));
+  let updateSql = `update blogs set blogcontent="${blogContent}",blogtitle="${blogTitle}",
+  blogauthor="${blogAuthor}" where user="${user}" and id=${blogId};`;
   const updateRes = await services.query(updateSql);
   if(updateRes.fieldCount == 0 && updateRes.warningCount == 0) {
     let responseJson = {
@@ -79,11 +82,10 @@ router.get('/blog/list', async (ctx) => {
       data: []
     }
     responseData.data = queryRes.map(item => {
-      console.log(item.createtime);
       return {
         blogTitle: item.blogtitle,
         author: item.blogauthor,
-        createTime: new Date(item.createtime).toLocaleDateString(),
+        createTime: item.createtime,
         blogId: item.id,
         user: item.user
       }
