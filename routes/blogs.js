@@ -12,6 +12,9 @@ router.post('/blog/add', async (ctx) => {
     blogAuthor
   } = ctx.request.body;
   blogTitle = xss(blogTitle);
+  console.log(1,blogContent.includes("'"));
+  blogContent = blogContent.replace(/'/g,"''");
+  console.log(2,blogContent.includes("''"));
   let createTime = new Date().toLocaleDateString();
   console.log(createTime);
   let resData = {}
@@ -22,7 +25,7 @@ router.post('/blog/add', async (ctx) => {
       msg: 'blog参数不正确'
     }
   } else {
-    let insertSql = `insert into blogs (user,blogcontent,blogtitle,blogauthor,createtime,isdelete) VALUES ('${user}','${blogContent}','${blogTitle}','${blogAuthor}','${createTime}',0);`
+    let insertSql = `insert into blogs (user,blogcontent,blogtitle,blogauthor,createtime,isdelete) VALUES ("${user}","${blogContent}","${blogTitle}","${blogAuthor}","${createTime}",0);`
     const insertRes = await services.query(insertSql);
     if (insertRes.fieldCount == 0 && insertRes.warningCount == 0) {
       resData = {
