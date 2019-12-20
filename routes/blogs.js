@@ -12,9 +12,9 @@ router.post('/blog/add', async (ctx) => {
     blogAuthor
   } = ctx.request.body;
   blogTitle = xss(blogTitle);
-  // console.log(1,blogContent.includes("'"));
-  // blogContent = blogContent.replace(/'/g,"''");
-  // console.log(2,blogContent.includes("''"));
+  console.log(1,blogContent.includes("\""));
+  blogContent = blogContent.replace(/"/g,'\\\"');
+  console.log(2,blogContent.includes("\\\""));
   let createTime = new Date().toLocaleDateString();
   console.log(createTime);
   let resData = {}
