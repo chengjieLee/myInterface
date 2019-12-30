@@ -201,9 +201,9 @@ router.post('/resume/addExperience', async (ctx) => {
 router.get('/resume/experienceList', async (ctx) => {
   const user = ctx.header['x-token'];
   const { id } = ctx.query;
-  const { pageName } = ctx.query;
+  const { pagename } = ctx.query;
   let responseJson = {};
-  if (pageName === 'project') {
+  if (pagename === 'project') {
     if (id) {
       let querySql = `select experience_name, timeRange, description from experience_project where user='${user}' and experience_id=${id};`;
       const queryResult = await services.query(querySql);
@@ -244,7 +244,7 @@ router.get('/resume/experienceList', async (ctx) => {
         }
       }
     }
-  } else if (pageName === 'work') {
+  } else if (pagename === 'work') {
     if (id) {
       let querySql = `select experience_name, timeRange,workPosition, description from experience_work where user='${user}' and experience_id=${id};`;
       const queryResult = await services.query(querySql);
