@@ -158,7 +158,7 @@ router.post('/resume/addExperience', async (ctx) => {
   const user = ctx.header['x-token'];
   if (pageName === 'work') {
     let insertSql = `insert into experience_work (user, experience_name, timeRange, workPosition, description)
-    values (${user},${name}, ${timeRange},${workPosition},${description});`;
+    values ('${user}','${name}', '${timeRange}','${workPosition}','${description}');`;
     try {
       const insertResult = await services.query(insertSql);
       if (insertResult.warningCount == 0 && insertResult.errorCount == 0) {
@@ -177,7 +177,7 @@ router.post('/resume/addExperience', async (ctx) => {
     }
   } else if (pageName === 'project') {
     let insertSql = `insert into experience_project (user, experience_name, timeRange, description)
-    values (${user},${name}, ${timeRange}, ${description});`;
+    values ('${user}','${name}', '${timeRange}', '${description}');`;
     try {
       const insertResult = await services.query(insertSql);
       if (insertResult.warningCount == 0 && insertResult.errorCount == 0) {

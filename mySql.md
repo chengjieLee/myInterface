@@ -56,12 +56,12 @@ ALTER TABLE logtest(表名) CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_c
 ###      experience_work
 
 ```
-  CREATE TABLE 表名(
+  CREATE TABLE experience_work(
     experience_id int(10) primary key auto_increment,
     user varchar(255),
     experience_name varchar(255),
-    timeRange： varchar(255),
-    workPosition: varchar(255),
-    description: text
+    timeRange varchar(255),
+    workPosition varchar(255),
+    description text
   ) default charset=utf8;
  ```
