@@ -54,7 +54,6 @@ router.post('/resume/edit', async (ctx, next) => {
         values ('${user}','${name}','${education}','${stringifySkillList}','${profession}');`
     const insertRes = await services.query(insertSql);
     if (insertRes.fieldCount == 0 && insertRes.warningCount == 0) {
-      console.log('插入成功')
       responseData = {
         code: 0,
         data: {},
@@ -144,4 +143,151 @@ router.get('/resume/skill', async (ctx) => {
   ctx.body = responseJson;
 })
 
+router.post('/resume/addExperience', async (ctx) => {
+  const pageName = ctx.request.body.pageName;
+  let responseJson = {};
+  let {
+    name,
+    timeRange,
+    workPosition,
+    description
+  } = ctx.request.body.experienceData;
+  name = xss(name);
+  workPosition = xss(workPosition);
+  description = xss(description);
+  const user = ctx.header['x-token'];
+  if (pageName === 'work') {
+    let insertSql = `insert into experience_work (user, experience_name, timeRange, workPosition, description)
+    values (${user},${name}, ${timeRange},${workPosition},${description});`;
+    try {
+      const insertResult = await services.query(insertSql);
+      if (insertResult.warningCount == 0 && insertResult.errorCount == 0) {
+        responseJson = {
+          code: 0,
+          msg: 'success',
+          data: {}
+        }
+      }
+    } catch (err) {
+      responseJson = {
+        code: 1,
+        msg: err,
+        data: {}
+      }
+    }
+  } else if (pageName === 'project') {
+    let insertSql = `insert into experience_project (user, experience_name, timeRange, description)
+    values (${user},${name}, ${timeRange}, ${description});`;
+    try {
+      const insertResult = await services.query(insertSql);
+      if (insertResult.warningCount == 0 && insertResult.errorCount == 0) {
+        responseJson = {
+          code: 0,
+          msg: 'success',
+          data: {}
+        }
+      }
+    } catch (err) {
+      responseJson = {
+        code: 1,
+        msg: err,
+        data: {}
+      }
+    }
+  }
+  ctx.body = responseJson
+})
+
+router.get('/resume/experienceList', async (ctx) => {
+  const user = ctx.header['x-token'];
+  const { id } = ctx.query;
+  const { pageName } = ctx.query;
+  let responseJson = {};
+  if (pageName === 'project') {
+    if (id) {
+      let querySql = `select experience_name, timeRange, description from experience_project where user='${user}' and experience_id=${id};`;
+      const queryResult = await services.query(querySql);
+      let tempData = queryResult[0]
+      let experienceData={
+        name: tempData.experience_name,
+        id: tempData.experience_id,
+        timeRange: tempData.timeRange,
+        description:tempData.description
+      }
+      responseJson = {
+        code: 0,
+        data: experienceData,
+        msg: 'success'
+      }
+    } else {
+      let querySql = `select experience_id, experience_name, timeRange, description from experience_project where user='${user}';`;
+      const queryResult = await services.query(querySql);
+      if (queryResult.length > 0) {
+        let experienceData = queryResult.map(item => {
+          return {
+            name: item.experience_name,
+            id: item.experience_id,
+            timeRange: item.timeRange,
+            description: item.description
+          }
+        })
+        responseJson = {
+          code: 0,
+          data: experienceData,
+          msg:'success'
+        }
+      }else {
+        responseJson = {
+          code: 0,
+          data: [],
+          msg:'success'
+        }
+      }
+    }
+  } else if (pageName === 'work') {
+    if (id) {
+      let querySql = `select experience_name, timeRange,workPosition, description from experience_work where user='${user}' and experience_id=${id};`;
+      const queryResult = await services.query(querySql);
+      let tempData = queryResult[0]
+      let experienceData={
+        name: tempData.experience_name,
+        id: tempData.experience_id,
+        timeRange: tempData.timeRange,
+        workPosition: tempData.workPosition,
+        description:tempData.description
+      }
+      responseJson = {
+        code: 0,
+        data: experienceData,
+        msg: 'success'
+      }
+    } else {
+      let querySql = `select experience_id, workPosition, experience_name, timeRange, description from experience_work where user='${user}';`;
+      const queryResult = await services.query(querySql);
+      if (queryResult.length > 0) {
+        let experienceData = queryResult.map(item => {
+          return {
+            name: item.experience_name,
+            id: item.experience_id,
+            timeRange: item.timeRange,
+            workPosition: item.workPosition,
+            description: item.description
+          }
+        })
+        responseJson = {
+          code: 0,
+          data: experienceData,
+          msg:'success'
+        }
+      }else {
+        responseJson = {
+          code: 0,
+          data: [],
+          msg:'success'
+        }
+      }
+    }
+  }
+  ctx.body = responseJson
+})
 module.exports = router;
