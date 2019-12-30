@@ -175,6 +175,7 @@ router.post('/resume/addExperience', async (ctx) => {
         data: {}
       }
     }
+    ctx.body = responseJson
   } else if (pageName === 'project') {
     let insertSql = `insert into experience_project (user, experience_name, timeRange, description)
     values ('${user}','${name}', '${timeRange}', '${description}');`;
@@ -194,8 +195,8 @@ router.post('/resume/addExperience', async (ctx) => {
         data: {}
       }
     }
+    ctx.body = responseJson
   }
-  ctx.body = responseJson
 })
 
 router.get('/resume/experienceList', async (ctx) => {
@@ -244,6 +245,7 @@ router.get('/resume/experienceList', async (ctx) => {
         }
       }
     }
+    ctx.body = responseJson
   } else if (pagename === 'work') {
     if (id) {
       let querySql = `select experience_name, timeRange,workPosition, description from experience_work where user='${user}' and experience_id=${id};`;
@@ -287,7 +289,8 @@ router.get('/resume/experienceList', async (ctx) => {
         }
       }
     }
+    ctx.body = responseJson
+
   }
-  ctx.body = responseJson
 })
 module.exports = router;
