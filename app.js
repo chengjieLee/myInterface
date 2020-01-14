@@ -26,7 +26,7 @@ app.use(bodyparser({
   .use(json())
   .use(logger())
   .use(cors({
-    origin: '*',
+    origin: 'http://47.103.116.19', // 允许cookie时 origin不可以设置为*（安全问题）
     credentials: true
   }))
   .use(static((__dirname+'/static/')))
