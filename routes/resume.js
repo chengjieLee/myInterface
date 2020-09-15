@@ -12,6 +12,7 @@ const checkHasUser = async (user) => {
   }
 }
 
+// 修改个人资料
 router.post('/resume/edit', async (ctx, next) => {
   const user = ctx.header['x-token']
   const {
@@ -70,6 +71,7 @@ router.post('/resume/edit', async (ctx, next) => {
   ctx.body = responseData;
 })
 
+// 个人技能查询 个人简历资料查询
 router.get('/resume', async (ctx) => {
   // 查不到返回个默认
   const user = ctx.header['x-token']
@@ -114,6 +116,7 @@ router.get('/resume', async (ctx) => {
   ctx.body = responseJson;
 })
 
+// 个人技能查询
 router.get('/resume/skill', async (ctx) => {
   const user = ctx.header['x-token']
   let responseJson = {};
@@ -143,6 +146,7 @@ router.get('/resume/skill', async (ctx) => {
   ctx.body = responseJson;
 })
 
+// 新增个人经历
 router.post('/resume/addExperience', async (ctx) => {
   const pageName = ctx.request.body.pageName;
   let responseJson = {};
@@ -199,13 +203,14 @@ router.post('/resume/addExperience', async (ctx) => {
   }
 })
 
+// 获取经历列表
 router.get('/resume/experienceList', async (ctx) => {
   const user = ctx.header['x-token'];
   const { id } = ctx.query;
   const { pagename } = ctx.query;
   let responseJson = {};
   if (pagename === 'project') {
-    if (id) {
+    if (id) {  // 传入ID  查询单个信息
       let querySql = `select experience_name, timeRange, description from experience_project where user='${user}' and experience_id=${id};`;
       const queryResult = await services.query(querySql);
       let tempData = queryResult[0]
@@ -291,6 +296,60 @@ router.get('/resume/experienceList', async (ctx) => {
     }
     ctx.body = responseJson
 
+  }
+})
+
+// 编辑经历
+router.post('/resume/editExperience', async (ctx) => {
+  // const user = ctx.header['x-token'];
+  const {
+    experienceBase
+  } = ctx.request.body
+
+  let { experienceId, pageName, timeRange, name, workPosition, description } = experienceBase;
+  let responseJson = {};
+  name = xss(name);
+  workPosition = xss(workPosition);
+  description = xss(description);
+  const user = ctx.header['x-token'];
+  if (pageName === 'work') {
+    let updateSql = `update experience_work set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where id='${experienceId}';`;
+    try {
+      const updateResult = await services.query(updateSql);
+      if (updateResult.warningCount == 0 && updateResult.errorCount == 0) {
+        responseJson = {
+          code: 0,
+          msg: 'success',
+          data: {}
+        }
+      }
+    } catch (err) {
+      responseJson = {
+        code: 1,
+        msg: err,
+        data: {}
+      }
+    }
+    ctx.body = responseJson
+  } else if (pageName === 'project') {
+    let updateSql = `update experience_project set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where id='${experienceId}';`;
+    try {
+      const updateResult = await services.query(updateSql);
+      if (updateResult.warningCount == 0 && updateResult.errorCount == 0) {
+        responseJson = {
+          code: 0,
+          msg: 'success',
+          data: {}
+        }
+      }
+    } catch (err) {
+      responseJson = {
+        code: 1,
+        msg: err,
+        data: {}
+      }
+    }
+    ctx.body = responseJson
   }
 })
 module.exports = router;
