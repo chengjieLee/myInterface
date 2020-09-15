@@ -315,7 +315,7 @@ router.post('/resume/editExperience', async (ctx) => {
     let updateSql = `update experience_work set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where user='${user}' and experience_id=${experienceId};`;
     try {
       const updateResult = await services.query(updateSql);
-      if (updateResult.warningCount == 0 && updateResult.errorCount == 0) {
+      if (updateResult.warningCount == 0 && updateResult.fieldCount == 0) {
         responseJson = {
           code: 0,
           msg: 'success',
@@ -334,7 +334,7 @@ router.post('/resume/editExperience', async (ctx) => {
     let updateSql = `update experience_project set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where user='${user}' and experience_id=${experienceId};`;
     try {
       const updateResult = await services.query(updateSql);
-      if (updateResult.warningCount == 0 && updateResult.errorCount == 0) {
+      if (updateResult.warningCount == 0 && updateResult.fieldCount == 0) {
         responseJson = {
           code: 0,
           msg: 'success',
