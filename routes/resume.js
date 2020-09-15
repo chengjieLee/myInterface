@@ -22,18 +22,20 @@ router.post('/resume/edit', async (ctx, next) => {
     name,
     education,
     profession,
-    skillList
+    skillList,
+    github
   } = resumeBase;
   let responseData = {};
   name = name ? xss(name) : '--';
   education = education ? xss(education) : '--';
   profession = profession ? xss(profession) : '--';
+  github = github ? xss(github) : '--';
   let stringifySkillList = JSON.stringify(skillList);
   let hasUser = await checkHasUser(user);
   // 表中有该用户字段则更新  没有该用户字段 插入新数据
   if (hasUser) {
     let updateSql = `update resumes set name='${name}',education='${education}',
-    profession='${profession}',skills='${stringifySkillList}' where user='${user}';`;
+    profession='${profession}',skills='${stringifySkillList}',github='${github}' where user='${user}';`;
     let updateRes = await services.query(updateSql);
     if (updateRes.fieldCount == 0 && updateRes.warningCount == 0) {
       console.log('保存成功')
@@ -51,8 +53,8 @@ router.post('/resume/edit', async (ctx, next) => {
     }
   } else {
     // 插入语句
-    let insertSql = `insert into resumes (user, name, education, skills, profession)
-        values ('${user}','${name}','${education}','${stringifySkillList}','${profession}');`
+    let insertSql = `insert into resumes (user, name, education, skills, profession, github)
+        values ('${user}','${name}','${education}','${stringifySkillList}','${profession}', '${github}');`
     const insertRes = await services.query(insertSql);
     if (insertRes.fieldCount == 0 && insertRes.warningCount == 0) {
       responseData = {
