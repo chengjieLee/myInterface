@@ -311,9 +311,8 @@ router.post('/resume/editExperience', async (ctx) => {
   name = xss(name);
   workPosition = xss(workPosition);
   description = xss(description);
-  const user = ctx.header['x-token'];
   if (pageName === 'work') {
-    let updateSql = `update experience_work set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where id='${experienceId}';`;
+    let updateSql = `update experience_work set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where id=${experienceId};`;
     try {
       const updateResult = await services.query(updateSql);
       if (updateResult.warningCount == 0 && updateResult.errorCount == 0) {
