@@ -301,7 +301,7 @@ router.get('/resume/experienceList', async (ctx) => {
 
 // 编辑经历
 router.post('/resume/editExperience', async (ctx) => {
-  // const user = ctx.header['x-token'];
+  const user = ctx.header['x-token'];
   const {
     experienceBase
   } = ctx.request.body
@@ -312,7 +312,7 @@ router.post('/resume/editExperience', async (ctx) => {
   workPosition = xss(workPosition);
   description = xss(description);
   if (pageName === 'work') {
-    let updateSql = `update experience_work set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where id=${experienceId};`;
+    let updateSql = `update experience_work set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where user='${user}' and experience_id=${experienceId};`;
     try {
       const updateResult = await services.query(updateSql);
       if (updateResult.warningCount == 0 && updateResult.errorCount == 0) {
@@ -331,7 +331,7 @@ router.post('/resume/editExperience', async (ctx) => {
     }
     ctx.body = responseJson
   } else if (pageName === 'project') {
-    let updateSql = `update experience_project set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where id='${experienceId}';`;
+    let updateSql = `update experience_project set experience_name='${name}', timeRange='${timeRange}', workPosition='${workPosition}', description='${description}' where user='${user}' and experience_id=${experienceId};`;
     try {
       const updateResult = await services.query(updateSql);
       if (updateResult.warningCount == 0 && updateResult.errorCount == 0) {
