@@ -11,22 +11,22 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const debug = require('debug')('koa2:server')
 const path = require('path')
-const cors = require('koa-cors')
-const static = require('koa-static')
+const cors = require('koa-cors')        // 跨域
+const static = require('koa-static')    // 静态资源
 const config = require('./config')
-const registerRouter = require('./routes')
+const registerRouter = require('./routes')  // 路由注册
 
 onerror(app)
 
 // middlewares
-app.use(bodyparser({
+app.use(bodyparser({           // 上传大小限制
   jsonLimit: '5mb',
   formLimit: '4096kb'
 }))
   .use(json())
   .use(logger())
   .use(cors({
-    origin: 'http://47.103.116.19', // 允许cookie时 origin不可以设置为*（安全问题）
+    origin: ['http://47.103.116.19', 'http://chengjielee.top', 'https://chengjielee.top'], // 允许cookie时 origin不可以设置为*（安全问题）
     credentials: true
   }))
   .use(static((__dirname+'/static/')))

@@ -22,6 +22,8 @@ blogs 中包含 主键 id  user 用户名 blogcontent 博客内容 blogtitle 博
 
 
 # 建表 resumes
+
+```
  CREATE TABLE resumes (
    resumeid int(10) primary key auto_increment, 
    user varchar(10),
@@ -33,24 +35,25 @@ blogs 中包含 主键 id  user 用户名 blogcontent 博客内容 blogtitle 博
    project text,
    name varchar(10) 
   );--- //这条是后来插入的
- 
+```
+
 resumes 表用来存储个人信息简历 应包含 id 姓名 string  头像 url string 学历: string 职位string  技能[{skillname:, skillProgress} {}],  工作经历[{start: ,end: ,company:,job:, desc:} ,{}] , 项目经验 [{}, {}]
 
 ### 向表中插入一条新字段 
-alter table resumes add name varchar(10);
+`alter table resumes add name varchar(10);`
 
 ### 更新表中某个字段属性
- alter table resumes change avatar avatar varchar(255);
+ `alter table resumes change avatar avatar varchar(255);`
  >alter table 表名称 change 字段原名称 字段新名称 字段类型 [是否允许非空];
 ### 更新语句
-update tableName set 表字段名=(values) where 条件;
+`update tableName set 表字段名=(values) where 条件;`
 
 ### 插入语句
-insert into 表名 (字段1,字段2) VALUES (字段1 value, 字段2 value);
+`insert into 表名 (字段1,字段2) VALUES (字段1 value, 字段2 value);`
 
 # 设置默认字符集
 
-ALTER TABLE logtest(表名) CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+`ALTER TABLE logtest(表名) CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;`
 
 ### 建表 experience_project
 ###      experience_work
