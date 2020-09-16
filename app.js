@@ -26,7 +26,15 @@ app.use(bodyparser({           // 上传大小限制
   .use(json())
   .use(logger())
   .use(cors({
-    origin: ['http://47.103.116.19', 'http://chengjielee.top', 'https://chengjielee.top'], // 允许cookie时 origin不可以设置为*（安全问题）
+    origin: function(ctx) {
+      const whiteList = ['http://47.103.116.19', 'http://chengjielee.top', 'https://chengjielee.top']; // 允许cookie时 origin不可以设置为*（安全问题）
+      let url = ctx.header.referer.substr(0,ctx.header.referer.length - 1);
+      if(whiteList.includes(url)){
+          return url //注意，这里域名末尾不能带/，否则不成功，所以在之前我把/通过substr干掉了
+      }else {
+        return 'http://chengjielee.top'
+      }
+    },
     credentials: true
   }))
   .use(static((__dirname+'/static/')))
