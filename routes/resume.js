@@ -90,6 +90,7 @@ router.get('/resume', async (ctx) => {
       name: resumeRes.name ? resumeRes.name : '',
       education: resumeRes.education ? resumeRes.education : '',
       profession: resumeRes.profession ? resumeRes.profession : '',
+      github: resumeRes.github ? resumeRes.github : '',
       skillList: resumeRes.skills ? JSON.parse(resumeRes.skills) : [],
       workExperience: resumeRes.workexperience ? JSON.parse(resumeRes.workexperience) : [],
       project: resumeRes.project ? JSON.parse(resumeRes.project) : []
